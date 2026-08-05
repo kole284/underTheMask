@@ -20,4 +20,10 @@ public class StompRealtimeEventPublisher implements RealtimeEventPublisher {
         RealtimeEvent<Object> event = new RealtimeEvent<>(EventType.LOBBY_UPDATED, payload, Instant.now());
         messagingTemplate.convertAndSend("/topic/lobbies/" + lobbyCode, event);
     }
+
+    @Override
+    public void publishGameUpdated(String lobbyCode, Object payload) {
+        RealtimeEvent<Object> event = new RealtimeEvent<>(EventType.GAME_UPDATED, payload, Instant.now());
+        messagingTemplate.convertAndSend("/topic/lobbies/" + lobbyCode, event);
+    }
 }

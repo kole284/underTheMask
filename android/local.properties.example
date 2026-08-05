@@ -1,0 +1,7 @@
+# Copy to local.properties and set the LAN address of the laptop for a physical phone.
+sdk.dir=/home/your-user/Android/Sdk
+backend.host=192.168.1.50
+
+# Optional release endpoints. Release builds require HTTPS/WSS in production.
+backend.release.apiUrl=https://api.example.com/api/
+backend.release.wsUrl=wss://api.example.com/ws

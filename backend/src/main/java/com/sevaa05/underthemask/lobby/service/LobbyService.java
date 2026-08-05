@@ -130,9 +130,10 @@ public class LobbyService {
         boolean removeLobby = false;
 
         synchronized (lobby) {
-            ensureWaiting(lobby);
-
             Player player = requirePlayerByToken(lobby, reconnectToken);
+            if (lobby.getStatus() != LobbyStatus.WAITING) {
+                lobby.resetGame();
+            }
             lobby.removePlayer(player.getId());
             Instant now = clock.instant();
             lobby.touch(now);

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface WordEntryRepository extends JpaRepository<WordEntry, Long> {
 
     List<WordEntry> findByCategoryIdAndActiveTrue(Long categoryId);
+
+    List<WordEntry> findByActiveTrue();
 }

@@ -1,5 +1,6 @@
 package com.sevaa05.underthemask.lobby.model;
 
+import com.sevaa05.underthemask.game.model.GameRound;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -17,6 +18,7 @@ public class Lobby {
     private final Instant createdAt;
     private GameSettings settings;
     private LobbyStatus status;
+    private GameRound gameRound;
     private UUID hostPlayerId;
     private Instant lastActivityAt;
 
@@ -46,6 +48,24 @@ public class Lobby {
 
     public void setStatus(LobbyStatus status) {
         this.status = Objects.requireNonNull(status, "status is required.");
+    }
+
+    public Optional<GameRound> getGameRound() {
+        return Optional.ofNullable(gameRound);
+    }
+
+    public void startGame(GameRound gameRound) {
+        this.gameRound = Objects.requireNonNull(gameRound, "gameRound is required.");
+        this.status = LobbyStatus.IN_GAME;
+    }
+
+    public void finishGame() {
+        this.status = LobbyStatus.FINISHED;
+    }
+
+    public void resetGame() {
+        this.gameRound = null;
+        this.status = LobbyStatus.WAITING;
     }
 
     public UUID getHostPlayerId() {

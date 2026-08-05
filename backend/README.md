@@ -4,7 +4,7 @@ Spring Boot backend for the Under The Mask multiplayer word-deduction game.
 
 ## Requirements
 
-- Java 25
+- Java 17+
 - Maven 3.8+
 - MySQL 8+
 
@@ -66,3 +66,15 @@ mvn test
 - `PATCH /api/lobbies/{code}/settings` updates settings using the host bearer token.
 
 STOMP clients connect to `/ws` and subscribe to `/topic/lobbies/{code}` for `LOBBY_UPDATED` events.
+
+## Game API
+
+All game endpoints require `Authorization: Bearer <reconnectToken>`.
+
+- `POST /api/lobbies/{code}/game/start` starts a round (host only, minimum three players).
+- `GET /api/lobbies/{code}/game` returns the authenticated player's private role and current public game state.
+- `POST /api/lobbies/{code}/game/clues` submits the current player's clue.
+- `POST /api/lobbies/{code}/game/votes` submits the player's selected suspects.
+- `POST /api/lobbies/{code}/game/reset` returns a finished round to the waiting lobby (host only).
+
+The existing `/topic/lobbies/{code}` subscription also publishes `GAME_UPDATED`. Its payload contains public state only; clients fetch private state through the authenticated game endpoint.
