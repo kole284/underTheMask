@@ -56,7 +56,7 @@ fun LobbyScreen(
     val lobby = state.lobby
 
     if (state.isLoading && lobby == null) {
-        LoadingScreen("Ucitavam lobby...")
+        LoadingScreen("Učitavam lobby...")
         return
     }
 
@@ -69,7 +69,7 @@ fun LobbyScreen(
                         Text(lobby?.lobbyCode ?: "------", fontWeight = FontWeight.Black)
                     }
                 },
-                actions = { TextButton(onClick = { showLeaveDialog = true }) { Text("Izadji") } },
+                actions = { TextButton(onClick = { showLeaveDialog = true }) { Text("Izađi") } },
             )
         },
         bottomBar = {
@@ -85,7 +85,7 @@ fun LobbyScreen(
                         }
                     } else {
                         Text(
-                            "Cekas hosta da pokrene igru.",
+                            "Čekaš hosta da pokrene igru.",
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -110,7 +110,7 @@ fun LobbyScreen(
         AlertDialog(
             onDismissRequest = { showLeaveDialog = false },
             title = { Text("Napustiti lobby?") },
-            text = { Text("Tvoja lokalna sesija bice obrisana. Ako je partija aktivna, backend vraca ostale igrace u lobby.") },
+            text = { Text("Tvoja lokalna sesija biće obrisana. Ako je partija aktivna, backend vraća ostale igrače u lobby.") },
             confirmButton = {
                 TextButton(
                     enabled = !state.isActionPending,
@@ -155,7 +155,7 @@ private fun LobbyContent(
                         Text(lobby.status.name, fontWeight = FontWeight.Bold)
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Igraci", style = MaterialTheme.typography.labelMedium)
+                        Text("Igrači", style = MaterialTheme.typography.labelMedium)
                         Text("${lobby.playerCount}/${lobby.maxPlayers}", fontWeight = FontWeight.Bold)
                     }
                 }
@@ -168,7 +168,7 @@ private fun LobbyContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Podesavanja", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text("Podešavanja", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         Text(
                             if (state.isHost) "Host kontrola" else "Samo host",
                             style = MaterialTheme.typography.labelMedium,
@@ -183,7 +183,7 @@ private fun LobbyContent(
                         onSelected = onImpostorCountChange,
                     )
                     SegmentedChoice(
-                        label = "Pomoc za impostora",
+                        label = "Pomoć za impostora",
                         selected = lobby.settings.hintType,
                         options = listOf(HintType.CATEGORY to "Kategorija", HintType.ASSOCIATION to "Asocijacija"),
                         enabled = state.isHost && !state.isActionPending,
@@ -194,7 +194,7 @@ private fun LobbyContent(
         }
         item(key = "players-heading") {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Igraci", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("Igrači", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text("Minimum 3", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -229,7 +229,7 @@ private fun PlayerRow(player: Player, isCurrentPlayer: Boolean) {
                 Text(player.playerName, fontWeight = FontWeight.Bold)
                 Text(
                     buildString {
-                        append(if (player.isHost) "Host" else "Igrac")
+                        append(if (player.isHost) "Host" else "Igrač")
                         if (isCurrentPlayer) append(" - ti")
                     },
                     style = MaterialTheme.typography.bodySmall,

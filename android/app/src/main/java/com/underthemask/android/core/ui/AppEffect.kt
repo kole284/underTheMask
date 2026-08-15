@@ -8,4 +8,4 @@ sealed interface AppEffect {
 
 fun Throwable.userMessage(): String =
     (this as? com.underthemask.android.core.network.AppException)?.error?.userMessage
-        ?: "Doslo je do neocekivane greske."
+        ?: "Došlo je do neočekivane greške."

@@ -45,7 +45,7 @@ fun ContentColumn(
 }
 
 @Composable
-fun LoadingScreen(message: String = "Ucitavanje...") {
+fun LoadingScreen(message: String = "Učitavanje...") {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             CircularProgressIndicator()
@@ -84,8 +84,8 @@ fun ConnectionBanner(state: ConnectionState) {
     if (state == ConnectionState.CONNECTED) return
     val message = when (state) {
         ConnectionState.CONNECTING -> "Povezivanje sa real-time serverom..."
-        ConnectionState.ERROR -> "Real-time veza nije uspela. REST osvezavanje je aktivno."
-        ConnectionState.DISCONNECTED -> "Real-time veza je prekinuta. REST osvezavanje je aktivno."
+        ConnectionState.ERROR -> "Real-time veza nije uspela. REST osvežavanje je aktivno."
+        ConnectionState.DISCONNECTED -> "Real-time veza je prekinuta. REST osvežavanje je aktivno."
         ConnectionState.CONNECTED -> return
     }
     Surface(

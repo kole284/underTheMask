@@ -55,7 +55,7 @@ fun CreateLobbyScreen(
                         modifier = Modifier.fillParentMaxWidth(),
                         label = { Text("Ime hosta") },
                         singleLine = true,
-                        supportingText = { Text("Najvise 32 karaktera") },
+                        supportingText = { Text("Najviše 32 karaktera") },
                     )
                     SegmentedChoice(
                         label = "Broj impostora",
@@ -65,7 +65,7 @@ fun CreateLobbyScreen(
                         onSelected = onImpostorCountChange,
                     )
                     SegmentedChoice(
-                        label = "Pomoc za impostora",
+                        label = "Pomoć za impostora",
                         selected = state.hintType,
                         options = listOf(HintType.CATEGORY to "Kategorija", HintType.ASSOCIATION to "Asocijacija"),
                         enabled = !state.isSubmitting,

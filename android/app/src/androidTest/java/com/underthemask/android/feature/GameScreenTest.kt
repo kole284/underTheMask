@@ -44,7 +44,7 @@ class GameScreenTest {
         }
 
         composeRule.onNodeWithText("Tvoj trag").assertExists()
-        composeRule.onNodeWithText("Posalji trag").assertExists()
+        composeRule.onNodeWithText("Pošalji trag").assertExists()
     }
 
     @Test

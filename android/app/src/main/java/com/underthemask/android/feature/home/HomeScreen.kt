@@ -50,7 +50,7 @@ fun HomeScreen(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Ko zna rec, a ko samo glumi?",
+                    text = "Ko zna reč, a ko samo glumi?",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Black,
                     textAlign = TextAlign.Center,
@@ -65,7 +65,7 @@ fun HomeScreen(
                 }
                 Spacer(Modifier.height(12.dp))
                 OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = onJoinLobby) {
-                    Text("Pridruzi se lobbyju")
+                    Text("Pridruži se lobbyju")
                 }
                 if (debugBackendAddress != null) {
                     Spacer(Modifier.height(28.dp))

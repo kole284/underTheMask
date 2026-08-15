@@ -21,13 +21,14 @@ export function SegmentedControl<TValue extends string | number>({
   return (
     <div className="segmented-field">
       <span className="control-label">{label}</span>
-      <div className="segmented-control">
+      <div className="segmented-control" role="group" aria-label={label}>
         {options.map((option) => (
           <button
             key={option.value}
             type="button"
             className={option.value === value ? 'segment active' : 'segment'}
             disabled={disabled}
+            aria-pressed={option.value === value}
             onClick={() => onChange(option.value)}
           >
             {option.label}

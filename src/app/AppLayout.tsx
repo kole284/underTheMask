@@ -7,9 +7,8 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   return (
     <main className="app-shell">
-      <div className="phone-frame">
-        {children}
-      </div>
+      <div className="app-backdrop" aria-hidden="true" />
+      <div className="app-content">{children}</div>
     </main>
   );
 }

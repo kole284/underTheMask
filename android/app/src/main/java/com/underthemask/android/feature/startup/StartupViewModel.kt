@@ -46,9 +46,9 @@ class StartupViewModel @Inject constructor(
                         startupError = if (appError?.kind == ErrorKind.NOT_FOUND
                             || appError?.kind == ErrorKind.UNAUTHORIZED
                         ) {
-                            "Prethodni lobby vise ne postoji. Lokalna sesija je obrisana."
+                            "Prethodni lobby više ne postoji. Lokalna sesija je obrisana."
                         } else {
-                            "Reconnect nije uspeo. Sesija je sacuvana; proveri backend adresu i mrezu."
+                            "Reconnect nije uspeo. Sesija je sačuvana; proveri backend adresu i mrežu."
                         }
                         AppEffect.OpenHome
                     },

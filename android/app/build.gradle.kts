@@ -15,8 +15,50 @@ val localProperties = Properties().apply {
     }
 }
 val debugHost = localProperties.getProperty("backend.host", "10.0.2.2")
-val releaseApiUrl = localProperties.getProperty("backend.release.apiUrl", "https://api.example.invalid/api/")
-val releaseWsUrl = localProperties.getProperty("backend.release.wsUrl", "wss://api.example.invalid/ws")
+val releaseApiUrl = localProperties.getProperty(
+    "backend.release.apiUrl",
+    localProperties.getProperty("underthemask.release.apiUrl", "https://mask.madebykole.dev/api/"),
+)
+val releaseWsUrl = localProperties.getProperty(
+    "backend.release.wsUrl",
+    localProperties.getProperty("underthemask.release.wsUrl", "wss://mask.madebykole.dev/ws"),
+)
+val signingStoreFilePath = localProperties.getProperty("underthemask.signing.storeFile")
+val signingStorePassword = localProperties.getProperty("underthemask.signing.storePassword")
+val signingKeyAlias = localProperties.getProperty("underthemask.signing.keyAlias")
+val signingKeyPassword = localProperties.getProperty("underthemask.signing.keyPassword")
+val releaseSigningConfigured = listOf(
+    signingStoreFilePath,
+    signingStorePassword,
+    signingKeyAlias,
+    signingKeyPassword,
+).all { !it.isNullOrBlank() }
+
+gradle.taskGraph.whenReady {
+    val releaseBuildRequested = allTasks.any { it.name == "assembleRelease" || it.name == "bundleRelease" }
+    if (releaseBuildRequested) {
+        val missingSigningProperties = listOf(
+            "underthemask.signing.storeFile" to signingStoreFilePath,
+            "underthemask.signing.storePassword" to signingStorePassword,
+            "underthemask.signing.keyAlias" to signingKeyAlias,
+            "underthemask.signing.keyPassword" to signingKeyPassword,
+        ).filter { (_, value) -> value.isNullOrBlank() }
+
+        if (missingSigningProperties.isNotEmpty()) {
+            throw GradleException(
+                "Release signing is not configured. Add these values to android/local.properties: " +
+                    missingSigningProperties.joinToString { it.first },
+            )
+        }
+
+        val signingStoreFile = file(signingStoreFilePath!!)
+        if (!signingStoreFile.isFile) {
+            throw GradleException(
+                "Release signing keystore does not exist: ${signingStoreFile.absolutePath}",
+            )
+        }
+    }
+}
 
 android {
     namespace = "com.underthemask.android"
@@ -33,16 +75,32 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (releaseSigningConfigured) {
+            create("release") {
+                storeFile = file(signingStoreFilePath!!)
+                storePassword = signingStorePassword
+                keyAlias = signingKeyAlias
+                keyPassword = signingKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("String", "API_BASE_URL", "\"http://$debugHost:8080/api/\"")
             buildConfigField("String", "WS_URL", "\"ws://$debugHost:8080/ws\"")
             buildConfigField("String", "BACKEND_HOST", "\"$debugHost\"")
+            buildConfigField("boolean", "REQUIRES_LOCAL_NETWORK_PERMISSION", "true")
         }
         release {
             buildConfigField("String", "API_BASE_URL", "\"$releaseApiUrl\"")
             buildConfigField("String", "WS_URL", "\"$releaseWsUrl\"")
             buildConfigField("String", "BACKEND_HOST", "\"production\"")
+            buildConfigField("boolean", "REQUIRES_LOCAL_NETWORK_PERMISSION", "false")
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             optimization {
                 enable = false
             }

@@ -1,10 +1,11 @@
 import { FormEvent, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { ArrowLeft, LogIn } from 'lucide-react';
+import { ArrowLeft, KeyRound, LogIn, Radio, UserRound } from 'lucide-react';
 import { getApiErrorMessage, joinLobby } from '../../shared/api/lobbyService';
 import { Button } from '../../shared/components/Button';
 import { Field } from '../../shared/components/Field';
 import { saveLobbySession } from '../../shared/storage/sessionStorage';
+import { BrandMark } from '../../shared/components/BrandMark';
 
 export function JoinLobbyPage() {
   const history = useHistory();
@@ -33,46 +34,57 @@ export function JoinLobbyPage() {
 
   return (
     <section className="screen form-screen">
-      <Link to="/" className="back-link">
-        <ArrowLeft size={18} />
-        Pocetna
-      </Link>
+      <header className="screen-topbar">
+        <BrandMark linkToHome />
+        <Link to="/" className="back-link compact"><ArrowLeft size={18} /> Početna</Link>
+      </header>
 
-      <div className="screen-heading">
-        <p className="eyebrow">Pridruzivanje</p>
-        <h1>Unesi kod i ime igraca</h1>
+      <div className="setup-layout join-layout">
+        <div className="setup-intro">
+          <p className="eyebrow">Pridruživanje</p>
+          <h1>Maska je spremna. Sto te čeka.</h1>
+          <p>Unesi kod koji je podelio host i ime po kome će te ekipa prepoznati.</p>
+          <div className="setup-notes">
+            <span><KeyRound size={18} /> Kod ima 6 znakova</span>
+            <span><UserRound size={18} /> Ime ostaje tokom runde</span>
+            <span><Radio size={18} /> Automatsko povezivanje sa sobom</span>
+          </div>
+        </div>
+
+        <form className="panel form-panel join-form" onSubmit={handleSubmit}>
+          <div className="form-panel-heading">
+            <span className="step-number">01</span>
+            <div><span className="control-label">Ulazak u sobu</span><h2>Tvoji podaci</h2></div>
+          </div>
+          <Field
+            label="Ime igrača"
+            placeholder="npr. Luka"
+            value={playerName}
+            autoComplete="nickname"
+            minLength={2}
+            maxLength={18}
+            required
+            onChange={(event) => setPlayerName(event.target.value)}
+          />
+          <Field
+            label="Kod lobija"
+            placeholder="BK7M2P"
+            value={normalizedCode}
+            autoComplete="off"
+            inputMode="text"
+            minLength={6}
+            maxLength={6}
+            required
+            className="code-input"
+            hint="6 slova ili brojeva, bez razmaka."
+            onChange={(event) => setLobbyCode(event.target.value)}
+          />
+          {errorMessage ? <div className="form-error" role="alert">{errorMessage}</div> : null}
+          <Button type="submit" icon={<LogIn size={20} />} disabled={isSubmitting || playerName.trim().length < 2 || normalizedCode.length !== 6}>
+            {isSubmitting ? 'Ulazim...' : 'Pridruži se lobiju'}
+          </Button>
+        </form>
       </div>
-
-      <form className="panel form-panel" onSubmit={handleSubmit}>
-        <Field
-          label="Ime"
-          placeholder="npr. Luka"
-          value={playerName}
-          minLength={2}
-          maxLength={18}
-          required
-          onChange={(event) => setPlayerName(event.target.value)}
-        />
-        <Field
-          label="Kod lobija"
-          placeholder="BK7M2P"
-          value={normalizedCode}
-          minLength={6}
-          maxLength={6}
-          required
-          className="code-input"
-          hint="Kod ima 6 slova ili brojeva."
-          onChange={(event) => setLobbyCode(event.target.value)}
-        />
-        {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
-        <Button
-          type="submit"
-          icon={<LogIn size={20} />}
-          disabled={isSubmitting || playerName.trim().length < 2 || normalizedCode.length !== 6}
-        >
-          {isSubmitting ? 'Ulazim...' : 'Pridruzi se lobiju'}
-        </Button>
-      </form>
     </section>
   );
 }

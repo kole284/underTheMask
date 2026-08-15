@@ -53,5 +53,5 @@ export function getApiErrorMessage(error: unknown): string {
     }
   }
 
-  return 'Zahtev nije uspeo. Proveri backend i pokusaj ponovo.';
+  return 'Zahtev nije uspeo. Proveri backend i pokušaj ponovo.';
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
-import { ArrowLeft, Crown, LogOut, Play, RefreshCw, Users } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Crown, LogOut, Play, Radio, RefreshCw, Settings2, Users } from 'lucide-react';
 import { GameView } from '../game/GameView';
 import {
   getGame,
@@ -18,6 +18,7 @@ import {
 } from '../../shared/api/lobbyService';
 import type { GameStateResponse, LobbyResponse, LobbySession } from '../../shared/api/types';
 import { Button } from '../../shared/components/Button';
+import { BrandMark } from '../../shared/components/BrandMark';
 import { SegmentedControl } from '../../shared/components/SegmentedControl';
 import { createLobbyRealtimeClient, type LobbyConnectionStatus } from '../../shared/realtime/lobbyRealtime';
 import { clearLobbySession, readLobbySession, saveLobbySession } from '../../shared/storage/sessionStorage';
@@ -41,6 +42,7 @@ export function LobbyPage() {
     [lobby?.players, session?.playerId],
   );
   const isHost = Boolean(session?.playerId && lobby?.hostPlayerId === session.playerId);
+  const connectedPlayers = lobby?.players.filter((player) => player.connected).length ?? 0;
 
   useEffect(() => {
     let ignore = false;
@@ -220,9 +222,10 @@ export function LobbyPage() {
   if (isLoading || !lobby) {
     return (
       <section className="screen lobby-screen center-screen">
-        <RefreshCw className="spin" size={26} />
-        <p>Ucitavam lobby...</p>
-        {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
+        <BrandMark />
+        <div className="loading-seal"><RefreshCw className="spin" size={24} /></div>
+        <div><h1>Pripremamo sto</h1><p>Učitavamo lobby i vraćamo tvoju sesiju.</p></div>
+        {errorMessage ? <div className="form-error" role="alert">{errorMessage}</div> : null}
       </section>
     );
   }
@@ -247,10 +250,12 @@ export function LobbyPage() {
 
   return (
     <section className="screen lobby-screen">
-      <div className="lobby-topbar">
+      <header className="screen-topbar lobby-topbar">
+        <BrandMark linkToHome />
+        <div className="topbar-actions">
         <Link to="/" className="back-link compact">
           <ArrowLeft size={18} />
-          Pocetna
+          Početna
         </Link>
         <Button
           type="button"
@@ -260,61 +265,69 @@ export function LobbyPage() {
           disabled={isLeaving}
           onClick={handleLeave}
         >
-          {isLeaving ? 'Izlazim...' : 'Izadji'}
+          {isLeaving ? 'Izlazim...' : 'Izađi'}
         </Button>
-      </div>
+        </div>
+      </header>
 
       {connectionStatus !== 'connected' ? (
-        <div className={`connection-note ${connectionStatus}`}>
-          {connectionStatus === 'connecting' ? 'Povezivanje u toku...' : 'Veza sa lobby serverom je prekinuta.'}
+        <div className={`connection-note ${connectionStatus}`} role="status">
+          <RefreshCw className={connectionStatus === 'connecting' ? 'spin' : ''} size={16} />
+          <div><strong>{connectionStatus === 'connecting' ? 'Ponovno povezivanje' : 'Veza je prekinuta'}</strong><span>{connectionStatus === 'connecting' ? 'Vraćamo te u lobby...' : 'Pokušavamo da obnovimo real-time vezu.'}</span></div>
         </div>
       ) : null}
 
-      {errorMessage ? <div className="connection-note error">{errorMessage}</div> : null}
+      {errorMessage ? <div className="connection-note error" role="alert">{errorMessage}</div> : null}
 
       <header className="lobby-header">
-        <div>
-          <p className="eyebrow">Lobby kod</p>
-          <h1>{lobby.lobbyCode}</h1>
+        <div className="lobby-title-block">
+          <p className="eyebrow">Privatna soba</p>
+          <div className="lobby-code-title">
+            <h1>{lobby.lobbyCode}</h1>
+            <Button type="button" variant="ghost" className="icon-button copy-code-button" aria-label="Kopiraj kod lobija" title="Kopiraj kod" icon={<Copy size={18} />} onClick={() => navigator.clipboard?.writeText(lobby.lobbyCode)} />
+          </div>
+          <p>Podeli kod sa ekipom. Igra počinje kada host pokrene rundu.</p>
         </div>
         <div className="lobby-meta">
-          <div className="capacity-pill">{lobby.status}</div>
-          <div className="capacity-pill">
-            <Users size={16} />
-            {lobby.playerCount}/{lobby.maxPlayers}
+          <div className="status-badge ready"><Radio size={15} /> {lobby.status === 'WAITING' ? 'Čeka igrače' : 'U toku'}</div>
+          <div className="lobby-stat">
+            <Users size={19} />
+            <span><strong>{lobby.playerCount}</strong> / {lobby.maxPlayers}</span>
+            <small>{connectedPlayers} online</small>
           </div>
         </div>
       </header>
 
       <div className="lobby-layout">
         <section className="panel players-panel">
-          <div className="panel-title-row">
-            <h2>Igraci</h2>
-            <span>Maks. 12</span>
+          <div className="panel-heading">
+            <div><span className="section-icon"><Users size={18} /></span><div><p className="eyebrow">Za stolom</p><h2>Igrači</h2></div></div>
+            <span className="count-badge">{lobby.playerCount}/{lobby.maxPlayers}</span>
           </div>
 
           <ul className="player-list">
             {lobby.players.map((player) => (
-              <li key={player.playerId} className="player-row">
-                <div className="player-avatar">{player.playerName.slice(0, 1).toUpperCase()}</div>
+              <li key={player.playerId} className={`player-row ${player.playerId === currentPlayer?.playerId ? 'current' : ''} ${!player.connected ? 'offline' : ''}`}>
+                <div className="player-avatar" aria-hidden="true">{player.playerName.slice(0, 1).toUpperCase()}</div>
                 <div className="player-copy">
                   <strong>{player.playerName}</strong>
-                  <span>
-                    {player.host ? 'Host' : 'Igrac'}
-                    {player.playerId === currentPlayer?.playerId ? ' - ti' : ''}
-                  </span>
+                  <span>{player.host ? 'Host sobe' : player.playerId === currentPlayer?.playerId ? 'Tvoj igrač' : 'Igrač'}</span>
                 </div>
-                {player.host ? <Crown className="host-icon" size={17} /> : null}
-                <span className={`status-dot ${player.connected ? 'connected' : 'disconnected'}`} />
+                <div className="player-flags">
+                  {player.host ? <Crown className="host-icon" size={16} aria-label="Host" /> : null}
+                  {player.playerId === currentPlayer?.playerId ? <span className="you-badge">Ti</span> : null}
+                  <span className={`status-dot ${player.connected ? 'connected' : 'disconnected'}`} title={player.connected ? 'Povezan' : 'Van mreže'} />
+                </div>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="panel settings-panel">
-          <div className="panel-title-row">
-            <h2>Podesavanja</h2>
-            <span>{isHost ? 'Host kontrola' : 'Ceka se host'}</span>
+        <aside className="lobby-control-rail">
+          <section className="panel settings-panel">
+          <div className="panel-heading compact-heading">
+            <div><span className="section-icon"><Settings2 size={18} /></span><div><p className="eyebrow">Pravila runde</p><h2>Podešavanja</h2></div></div>
+            {isHost ? <span className="host-control-badge"><Crown size={13} /> Host</span> : null}
           </div>
 
           <SegmentedControl
@@ -339,21 +352,21 @@ export function LobbyPage() {
             onChange={(value) => handleSettingsChange('hintType', value)}
           />
 
-          {!isHost ? <div className="disabled-note">Samo host moze da menja opcije pre pocetka.</div> : null}
-        </section>
-      </div>
+          {!isHost ? <div className="disabled-note"><Crown size={16} /> Samo host može da menja pravila.</div> : null}
+          </section>
 
-      <div className={`sticky-actions ${isHost ? '' : 'muted'}`}>
-        {isHost ? (
-          <Button
-            type="button"
-            icon={<Play size={18} />}
-            disabled={isGameActionPending || lobby.playerCount < 3 || lobby.settings.impostorCount >= lobby.playerCount}
-            onClick={handleStartGame}
-          >
-            {isGameActionPending ? 'Pokrecem...' : 'Pokreni igru'}
-          </Button>
-        ) : <p>Cekas hosta u lobbyju.</p>}
+          <div className={`lobby-action-bar ${isHost ? '' : 'muted'}`}>
+            <div className="readiness-copy">
+              {isHost ? <Check size={18} /> : <RefreshCw size={18} />}
+              <div><strong>{isHost ? (lobby.playerCount >= 3 ? 'Spremno za početak' : 'Potrebno je još igrača') : 'Čeka se host'}</strong><span>{isHost ? `${lobby.playerCount}/3 minimum igrača` : 'Ostani u sobi do početka.'}</span></div>
+            </div>
+            {isHost ? (
+              <Button type="button" icon={<Play size={18} />} disabled={isGameActionPending || lobby.playerCount < 3 || lobby.settings.impostorCount >= lobby.playerCount} onClick={handleStartGame}>
+                {isGameActionPending ? 'Pokrećem...' : 'Pokreni igru'}
+              </Button>
+            ) : null}
+          </div>
+        </aside>
       </div>
     </section>
   );

@@ -67,7 +67,7 @@ fun GameScreen(
     val gameState = state.gameState
 
     if (state.isLoading && gameState == null) {
-        LoadingScreen("Ucitavam partiju...")
+        LoadingScreen("Učitavam partiju...")
         return
     }
 
@@ -80,7 +80,7 @@ fun GameScreen(
                         Text(gameState?.game?.phase?.displayName() ?: "Igra", fontWeight = FontWeight.Black)
                     }
                 },
-                actions = { TextButton(onClick = { showLeaveDialog = true }) { Text("Izadji") } },
+                actions = { TextButton(onClick = { showLeaveDialog = true }) { Text("Izađi") } },
             )
         },
         bottomBar = {
@@ -112,7 +112,7 @@ fun GameScreen(
         AlertDialog(
             onDismissRequest = { showLeaveDialog = false },
             title = { Text("Napustiti partiju?") },
-            text = { Text("Backend ce prekinuti aktivnu rundu i vratiti preostale igrace u lobby.") },
+            text = { Text("Backend će prekinuti aktivnu rundu i vratiti preostale igrače u lobby.") },
             confirmButton = {
                 TextButton(
                     enabled = !state.isActionPending,
@@ -176,7 +176,7 @@ private fun GameContent(
                 }
                 item(key = "vote-title") {
                     SectionTitle(
-                        "Izaberi osumnjicene",
+                        "Izaberi osumnjičene",
                         "${state.selectedPlayerIds.size}/${game.requiredSuspectCount}",
                     )
                 }
@@ -184,7 +184,7 @@ private fun GameContent(
                     item(key = "vote-complete") {
                         Surface(color = MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.small) {
                             Text(
-                                "Glas je zabelezen. Glasalo je ${game.votesSubmitted}/${game.totalPlayers} igraca.",
+                                "Glas je zabeležen. Glasalo je ${game.votesSubmitted}/${game.totalPlayers} igrača.",
                                 modifier = Modifier.padding(14.dp),
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
@@ -260,7 +260,7 @@ private fun RolePanel(gameState: GameState, revealed: Boolean, onToggle: () -> U
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(if (isImpostor) "Tvoj hint" else "Tajna rec", style = MaterialTheme.typography.labelMedium)
+                        Text(if (isImpostor) "Tvoj hint" else "Tajna reč", style = MaterialTheme.typography.labelMedium)
                         Text(
                             if (isImpostor) gameState.hint else gameState.secretWord.orEmpty(),
                             style = MaterialTheme.typography.headlineMedium,
@@ -286,7 +286,7 @@ private fun CurrentTurnPanel(game: GamePublicState, playerId: String?) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Text("Na potezu", style = MaterialTheme.typography.labelMedium)
             Text(
-                if (game.currentPlayerId == playerId) "Ti dajes trag" else currentPlayer?.playerName.orEmpty(),
+                if (game.currentPlayerId == playerId) "Ti daješ trag" else currentPlayer?.playerName.orEmpty(),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Black,
             )
@@ -332,7 +332,7 @@ private fun SectionTitle(title: String, count: String) {
 private fun EmptyClues() {
     Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.small) {
         Text(
-            "Prvi trag jos nije poslat.",
+            "Prvi trag još nije poslat.",
             modifier = Modifier.fillMaxWidth().padding(24.dp),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -403,15 +403,15 @@ private fun ResultPanel(result: GameResult, players: List<GamePlayer>) {
         ) {
             Text("Pobednici", style = MaterialTheme.typography.labelMedium)
             Text(
-                if (crewmatesWon) "IGRACI" else "IMPOSTORI",
+                if (crewmatesWon) "IGRAČI" else "IMPOSTORI",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Black,
             )
-            Text("Tajna rec: ${result.secretWord}", fontWeight = FontWeight.Bold)
+            Text("Tajna reč: ${result.secretWord}", fontWeight = FontWeight.Bold)
             Text("Impostor${if (impostorNames.size > 1) "i" else ""}: ${impostorNames.joinToString()}")
             if (result.tie) {
                 Text(
-                    "Neresen rezultat ide u korist impostora.",
+                    "Nerešen rezultat ide u korist impostora.",
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
                 )
@@ -446,23 +446,23 @@ private fun GameBottomAction(
                         singleLine = true,
                     )
                     Button(modifier = Modifier.fillMaxWidth(), enabled = state.canSubmitClue, onClick = onSubmitClue) {
-                        Text(if (state.isActionPending) "Saljem..." else "Posalji trag")
+                        Text(if (state.isActionPending) "Šaljem..." else "Pošalji trag")
                     }
                 } else {
                     val current = game.players.firstOrNull { it.playerId == game.currentPlayerId }?.playerName
                     Text(
-                        "Ceka se trag igraca ${current.orEmpty()}.",
+                        "Čeka se trag igrača ${current.orEmpty()}.",
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                     )
                 }
                 GamePhase.VOTING -> if (gameState.hasSubmittedVote) {
                     Text(
-                        "Ceka se da svi igraci glasaju (${game.votesSubmitted}/${game.totalPlayers}).",
+                        "Čeka se da svi igrači glasaju (${game.votesSubmitted}/${game.totalPlayers}).",
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                     )
                 } else {
                     Button(modifier = Modifier.fillMaxWidth(), enabled = state.canSubmitVote, onClick = onSubmitVote) {
-                        Text(if (state.isActionPending) "Saljem..." else "Potvrdi glas")
+                        Text(if (state.isActionPending) "Šaljem..." else "Potvrdi glas")
                     }
                 }
                 GamePhase.FINISHED -> if (state.isHost) {
@@ -472,7 +472,7 @@ private fun GameBottomAction(
                         onClick = onReset,
                     ) { Text(if (state.isActionPending) "Obrada..." else "Nazad u lobby") }
                 } else {
-                    Text("Ceka se host za novu rundu.", modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text("Čeka se host za novu rundu.", modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
             }
         }

@@ -32,7 +32,7 @@ fun JoinLobbyScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pridruzivanje") },
+                title = { Text("Pridruživanje") },
                 navigationIcon = { TextButton(onClick = onBack) { Text("Nazad") } },
             )
         },
@@ -44,7 +44,7 @@ fun JoinLobbyScreen(
             item {
                 ContentColumn {
                     Text(
-                        "Unesi kod i ime igraca",
+                        "Unesi kod i ime igrača",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Black,
                     )
@@ -52,7 +52,7 @@ fun JoinLobbyScreen(
                         value = state.playerName,
                         onValueChange = onNameChange,
                         modifier = Modifier.fillParentMaxWidth(),
-                        label = { Text("Ime igraca") },
+                        label = { Text("Ime igrača") },
                         singleLine = true,
                     )
                     OutlinedTextField(
@@ -66,7 +66,7 @@ fun JoinLobbyScreen(
                     )
                     state.errorMessage?.let { InlineError(it) }
                     PrimaryAction(
-                        text = if (state.isSubmitting) "Ulazim..." else "Pridruzi se lobbyju",
+                        text = if (state.isSubmitting) "Ulazim..." else "Pridruži se lobbyju",
                         enabled = state.canSubmit,
                         onClick = onSubmit,
                     )

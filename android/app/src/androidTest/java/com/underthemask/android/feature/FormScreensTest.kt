@@ -52,7 +52,7 @@ class FormScreensTest {
             }
         }
 
-        composeRule.onNodeWithText("Pridruzi se lobbyju").assertIsEnabled().performClick()
+        composeRule.onNodeWithText("Pridruži se lobbyju").assertIsEnabled().performClick()
         assertTrue(submitted)
     }
 }

@@ -4,5 +4,11 @@ backend.host=192.168.1.50
 
 # Release endpoints for the Hetzner production deployment.
 # Do not use a local IP address here. Release builds require HTTPS/WSS.
-backend.release.apiUrl=https://game.example.com/api/
-backend.release.wsUrl=wss://game.example.com/ws
+backend.release.apiUrl=https://mask.madebykole.dev/api/
+backend.release.wsUrl=wss://mask.madebykole.dev/ws
+
+# Release signing. Keep the keystore outside this repository and keep this file untracked.
+underthemask.signing.storeFile=/home/your-user/.android-keystores/underthemask-release.jks
+underthemask.signing.storePassword=change-this-password
+underthemask.signing.keyAlias=underthemask
+underthemask.signing.keyPassword=change-this-password
