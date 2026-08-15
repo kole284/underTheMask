@@ -129,6 +129,10 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# IDE/editor project files
+.idea/
+.vscode/
+
 # pnpm
 .pnpm-store
 
