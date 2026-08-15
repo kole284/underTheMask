@@ -23,7 +23,7 @@ class ErrorMapper(private val json: Json) {
                 AppError(
                     ErrorKind.NETWORK,
                     "NETWORK_ERROR",
-                    "Server nije dostupan. Proveri adresu, Wi-Fi mrežu i firewall.",
+                    "Server trenutno nije dostupan. Proveri internet vezu i pokušaj ponovo.",
                 ),
                 throwable,
             )
@@ -73,7 +73,7 @@ class ErrorMapper(private val json: Json) {
     }
 
     private fun localizedMessage(code: String?, fallback: String): String = when (code) {
-        "LOBBY_NOT_FOUND" -> "Lobby ne postoji ili je backend restartovan."
+        "LOBBY_NOT_FOUND" -> "Lobby ne postoji ili više nije aktivan."
         "LOBBY_FULL" -> "Lobby je popunjen."
         "DUPLICATE_PLAYER_NAME" -> "To ime je već zauzeto u lobbyju."
         "INVALID_LOBBY_CODE" -> "Lobby kod nije važeći."
@@ -88,7 +88,7 @@ class ErrorMapper(private val json: Json) {
         "NOT_ENOUGH_PLAYERS" -> "Potrebna su najmanje tri igrača."
         "TOO_MANY_IMPOSTORS" -> "Broj impostora mora biti manji od broja igrača."
         "GAME_ALREADY_STARTED" -> "Partija je već u toku."
-        "GAME_CONTENT_UNAVAILABLE" -> "Katalog reči nije dostupan. Proveri bazu i Flyway migracije."
+        "GAME_CONTENT_UNAVAILABLE" -> "Sadržaj za novu rundu trenutno nije dostupan. Pokušaj ponovo."
         "INVALID_CLUE" -> "Trag nije važeći."
         "SECRET_WORD_AS_CLUE" -> "Tajna reč ne može biti trag."
         "NOT_YOUR_TURN" -> "Nije tvoj red za slanje traga."
