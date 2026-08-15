@@ -12,7 +12,6 @@ export function BrandMark({ compact = false, linkToHome = false }: BrandMarkProp
       {!compact ? (
         <span className="brand-mark-copy">
           <strong>Under The Mask</strong>
-          <small>Social deduction</small>
         </span>
       ) : null}
     </>

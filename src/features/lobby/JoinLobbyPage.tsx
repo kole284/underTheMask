@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { ArrowLeft, KeyRound, LogIn, Radio, UserRound } from 'lucide-react';
+import { ArrowLeft, LogIn } from 'lucide-react';
 import { getApiErrorMessage, joinLobby } from '../../shared/api/lobbyService';
 import { Button } from '../../shared/components/Button';
 import { Field } from '../../shared/components/Field';
@@ -44,11 +44,6 @@ export function JoinLobbyPage() {
           <p className="eyebrow">Pridruživanje</p>
           <h1>Maska je spremna. Sto te čeka.</h1>
           <p>Unesi kod koji je podelio host i ime po kome će te ekipa prepoznati.</p>
-          <div className="setup-notes">
-            <span><KeyRound size={18} /> Kod ima 6 znakova</span>
-            <span><UserRound size={18} /> Ime ostaje tokom runde</span>
-            <span><Radio size={18} /> Automatsko povezivanje sa sobom</span>
-          </div>
         </div>
 
         <form className="panel form-panel join-form" onSubmit={handleSubmit}>
