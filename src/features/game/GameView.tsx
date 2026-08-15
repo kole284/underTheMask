@@ -188,41 +188,60 @@ export function GameView({
         </div>
       </header>
 
-      {game.phase !== 'FINISHED' ? (
-        <section className={`role-panel ${state.role === 'IMPOSTOR' ? 'impostor' : 'crewmate'}`}>
-          <div className="role-panel-heading">
-            <div>
-              <span className="eyebrow">Tvoja uloga</span>
-              <strong>{roleRevealed ? roleLabel : 'SAKRIVENO'}</strong>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              className="icon-button"
-              aria-label={roleRevealed ? 'Sakrij ulogu' : 'Prikazi ulogu'}
-              title={roleRevealed ? 'Sakrij ulogu' : 'Prikazi ulogu'}
-              icon={roleRevealed ? <EyeOff size={19} /> : <Eye size={19} />}
-              onClick={() => setRoleRevealed((visible) => !visible)}
-            />
-          </div>
-          {roleRevealed ? (
-            <div className="role-content">
-              <span>{state.role === 'IMPOSTOR' ? 'Tvoj hint' : 'Tajna rec'}</span>
-              <strong>{state.role === 'IMPOSTOR' ? state.hint : state.secretWord}</strong>
-              {state.role === 'CREWMATE' ? <small>Kategorija: {state.hint}</small> : null}
-            </div>
-          ) : (
-            <div className="role-concealed">Privatni podatak</div>
-          )}
-        </section>
-      ) : null}
-
       {game.phase === 'CLUES' ? (
-        <>
-          <section className="panel game-status-panel">
-            <span className="eyebrow">Na potezu</span>
-            <h2>{isMyTurn ? 'Ti dajes trag' : currentPlayer?.playerName}</h2>
-          </section>
+        <div className="game-phase-layout clue-phase-layout">
+          <div className="game-side-column">
+            <section className={`role-panel ${state.role === 'IMPOSTOR' ? 'impostor' : 'crewmate'}`}>
+              <div className="role-panel-heading">
+                <div>
+                  <span className="eyebrow">Tvoja uloga</span>
+                  <strong>{roleRevealed ? roleLabel : 'SAKRIVENO'}</strong>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="icon-button"
+                  aria-label={roleRevealed ? 'Sakrij ulogu' : 'Prikazi ulogu'}
+                  title={roleRevealed ? 'Sakrij ulogu' : 'Prikazi ulogu'}
+                  icon={roleRevealed ? <EyeOff size={19} /> : <Eye size={19} />}
+                  onClick={() => setRoleRevealed((visible) => !visible)}
+                />
+              </div>
+              {roleRevealed ? (
+                <div className="role-content">
+                  <span>{state.role === 'IMPOSTOR' ? 'Tvoj hint' : 'Tajna rec'}</span>
+                  <strong>{state.role === 'IMPOSTOR' ? state.hint : state.secretWord}</strong>
+                  {state.role === 'CREWMATE' ? <small>Kategorija: {state.hint}</small> : null}
+                </div>
+              ) : (
+                <div className="role-concealed">Privatni podatak</div>
+              )}
+            </section>
+
+            <section className="panel game-status-panel">
+              <span className="eyebrow">Na potezu</span>
+              <h2>{isMyTurn ? 'Ti dajes trag' : currentPlayer?.playerName}</h2>
+            </section>
+
+            {isMyTurn ? (
+              <form className="sticky-actions game-action-form" onSubmit={handleClueSubmit}>
+                <label htmlFor="clue" className="sr-only">Tvoj trag</label>
+                <input
+                  id="clue"
+                  className="input"
+                  maxLength={80}
+                  placeholder="Upisi jedan trag"
+                  value={clue}
+                  onChange={(event) => setClue(event.target.value)}
+                />
+                <Button type="submit" icon={<Send size={18} />} disabled={isBusy || !clue.trim()}>
+                  Posalji
+                </Button>
+              </form>
+            ) : (
+              <div className="sticky-actions muted"><p>Ceka se trag igraca {currentPlayer?.playerName}.</p></div>
+            )}
+          </div>
 
           <ClueChat
             clues={game.clues}
@@ -231,105 +250,119 @@ export function GameView({
             phase={game.phase}
             viewerPlayerId={playerId}
           />
-
-          {isMyTurn ? (
-            <form className="sticky-actions game-action-form" onSubmit={handleClueSubmit}>
-              <label htmlFor="clue" className="sr-only">Tvoj trag</label>
-              <input
-                id="clue"
-                className="input"
-                maxLength={80}
-                placeholder="Upisi jedan trag"
-                value={clue}
-                onChange={(event) => setClue(event.target.value)}
-              />
-              <Button type="submit" icon={<Send size={18} />} disabled={isBusy || !clue.trim()}>
-                Posalji
-              </Button>
-            </form>
-          ) : (
-            <div className="sticky-actions muted"><p>Ceka se trag igraca {currentPlayer?.playerName}.</p></div>
-          )}
-        </>
+        </div>
       ) : null}
 
       {game.phase === 'VOTING' ? (
-        <>
-          <ClueChat
-            clues={game.clues}
-            currentPlayerId={game.currentPlayerId}
-            phase={game.phase}
-            viewerPlayerId={playerId}
-          />
-
-          <section className="panel vote-panel">
-            <div className="panel-title-row">
-              <h2>Izaberi osumnjicene</h2>
-              <span>{selectedPlayerIds.length}/{game.requiredSuspectCount}</span>
-            </div>
-            {state.hasSubmittedVote ? (
-              <div className="vote-complete"><Check size={20} /> Glas je zabelezen</div>
-            ) : (
-              <form onSubmit={handleVoteSubmit}>
-                <div className="vote-options">
-                  {game.players.filter((player) => player.playerId !== playerId).map((player) => (
-                    <label key={player.playerId} className="vote-option">
-                      <input
-                        type="checkbox"
-                        checked={selectedPlayerIds.includes(player.playerId)}
-                        disabled={isBusy || (
-                          !selectedPlayerIds.includes(player.playerId)
-                          && selectedPlayerIds.length >= game.requiredSuspectCount
-                        )}
-                        onChange={() => toggleVote(player.playerId)}
-                      />
-                      <span>{player.playerName}</span>
-                    </label>
-                  ))}
+        <div className="game-phase-layout voting-phase-layout">
+          <div className="game-side-column">
+            <section className={`role-panel ${state.role === 'IMPOSTOR' ? 'impostor' : 'crewmate'}`}>
+              <div className="role-panel-heading">
+                <div>
+                  <span className="eyebrow">Tvoja uloga</span>
+                  <strong>{roleRevealed ? roleLabel : 'SAKRIVENO'}</strong>
                 </div>
                 <Button
-                  type="submit"
-                  icon={<Vote size={18} />}
-                  disabled={isBusy || selectedPlayerIds.length !== game.requiredSuspectCount}
-                >
-                  Potvrdi glas
-                </Button>
-              </form>
-            )}
-          </section>
-          <div className="sticky-actions muted">
-            <p>Glasalo je {game.votesSubmitted} od {game.totalPlayers} igraca.</p>
+                  type="button"
+                  variant="ghost"
+                  className="icon-button"
+                  aria-label={roleRevealed ? 'Sakrij ulogu' : 'Prikazi ulogu'}
+                  title={roleRevealed ? 'Sakrij ulogu' : 'Prikazi ulogu'}
+                  icon={roleRevealed ? <EyeOff size={19} /> : <Eye size={19} />}
+                  onClick={() => setRoleRevealed((visible) => !visible)}
+                />
+              </div>
+              {roleRevealed ? (
+                <div className="role-content">
+                  <span>{state.role === 'IMPOSTOR' ? 'Tvoj hint' : 'Tajna rec'}</span>
+                  <strong>{state.role === 'IMPOSTOR' ? state.hint : state.secretWord}</strong>
+                  {state.role === 'CREWMATE' ? <small>Kategorija: {state.hint}</small> : null}
+                </div>
+              ) : (
+                <div className="role-concealed">Privatni podatak</div>
+              )}
+            </section>
+            <div className="sticky-actions muted">
+              <p>Glasalo je {game.votesSubmitted} od {game.totalPlayers} igraca.</p>
+            </div>
           </div>
-        </>
+
+          <div className="game-main-column">
+            <ClueChat
+              clues={game.clues}
+              currentPlayerId={game.currentPlayerId}
+              phase={game.phase}
+              viewerPlayerId={playerId}
+            />
+
+            <section className="panel vote-panel">
+              <div className="panel-title-row">
+                <h2>Izaberi osumnjicene</h2>
+                <span>{selectedPlayerIds.length}/{game.requiredSuspectCount}</span>
+              </div>
+              {state.hasSubmittedVote ? (
+                <div className="vote-complete"><Check size={20} /> Glas je zabelezen</div>
+              ) : (
+                <form onSubmit={handleVoteSubmit}>
+                  <div className="vote-options">
+                    {game.players.filter((player) => player.playerId !== playerId).map((player) => (
+                      <label key={player.playerId} className="vote-option">
+                        <input
+                          type="checkbox"
+                          checked={selectedPlayerIds.includes(player.playerId)}
+                          disabled={isBusy || (
+                            !selectedPlayerIds.includes(player.playerId)
+                            && selectedPlayerIds.length >= game.requiredSuspectCount
+                          )}
+                          onChange={() => toggleVote(player.playerId)}
+                        />
+                        <span>{player.playerName}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <Button
+                    type="submit"
+                    icon={<Vote size={18} />}
+                    disabled={isBusy || selectedPlayerIds.length !== game.requiredSuspectCount}
+                  >
+                    Potvrdi glas
+                  </Button>
+                </form>
+              )}
+            </section>
+          </div>
+        </div>
       ) : null}
 
       {game.phase === 'FINISHED' && game.result ? (
-        <>
+        <div className="result-layout">
           <section className={`result-banner ${game.result.winner === 'CREWMATES' ? 'crewmates' : 'impostors'}`}>
             <span className="eyebrow">Pobednici</span>
             <h2>{game.result.winner === 'CREWMATES' ? 'IGRACI' : 'IMPOSTORI'}</h2>
             {game.result.tie ? <p>Neresen vrh glasanja ide u korist impostora.</p> : null}
           </section>
 
-          <section className="panel reveal-panel">
-            <span className="eyebrow">Tajna rec</span>
-            <strong>{game.result.secretWord}</strong>
-            <span>Impostor{game.result.impostorPlayerIds.length > 1 ? 'i' : ''}: {
-              game.result.impostorPlayerIds.map((id) => playersById.get(id)?.playerName).join(', ')
-            }</span>
-          </section>
+          <div className="result-grid">
+            <section className="panel reveal-panel">
+              <span className="eyebrow">Tajna rec</span>
+              <strong>{game.result.secretWord}</strong>
+              <span>Impostor{game.result.impostorPlayerIds.length > 1 ? 'i' : ''}: {
+                game.result.impostorPlayerIds.map((id) => playersById.get(id)?.playerName).join(', ')
+              }</span>
+            </section>
 
-          <section className="panel tally-panel">
-            <div className="panel-title-row"><h2>Glasovi</h2></div>
-            <ul>
-              {[...game.result.tallies].sort((left, right) => right.votes - left.votes).map((tally) => (
-                <li key={tally.playerId}>
-                  <span>{tally.playerName}</span>
-                  <strong>{tally.votes}</strong>
-                </li>
-              ))}
-            </ul>
-          </section>
+            <section className="panel tally-panel">
+              <div className="panel-title-row"><h2>Glasovi</h2></div>
+              <ul>
+                {[...game.result.tallies].sort((left, right) => right.votes - left.votes).map((tally) => (
+                  <li key={tally.playerId}>
+                    <span>{tally.playerName}</span>
+                    <strong>{tally.votes}</strong>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
 
           <div className="sticky-actions">
             {isHost ? (
@@ -338,7 +371,7 @@ export function GameView({
               </Button>
             ) : <p>Ceka se host za novu rundu.</p>}
           </div>
-        </>
+        </div>
       ) : null}
     </section>
   );

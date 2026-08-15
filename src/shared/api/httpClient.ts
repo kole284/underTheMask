@@ -1,14 +1,9 @@
 import axios from 'axios';
+import { apiBaseUrl } from './config';
 import { readLobbySession } from '../storage/sessionStorage';
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
-if (!apiUrl) {
-  throw new Error('VITE_API_URL is required.');
-}
-
 export const httpClient = axios.create({
-  baseURL: apiUrl,
+  baseURL: apiBaseUrl,
 });
 
 httpClient.interceptors.request.use((config) => {

@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+!.env.example
+!.env.production.example
+node_modules
+dist
+backend/target
+backend/.m2
+android/.gradle
+android/**/build
+*.log

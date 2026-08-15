@@ -136,6 +136,15 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 Cleartext HTTP/WS je dozvoljen samo debug manifestom. Release build nema cleartext dozvolu i ocekuje HTTPS/WSS vrednosti `backend.release.apiUrl` i `backend.release.wsUrl`.
 
+Za production build protiv Hetzner deployment-a podesi u `local.properties`:
+
+```properties
+backend.release.apiUrl=https://GAME_DOMAIN/api/
+backend.release.wsUrl=wss://GAME_DOMAIN/ws
+```
+
+`GAME_DOMAIN` je isti domen koji koristi web aplikacija. Release build ne treba `backend.host` lokalnu IP adresu; ona ostaje samo za debug/local razvoj.
+
 ## 7. Sesija i reconnect
 
 DataStore cuva aktivni `lobbyCode`, `playerId` i `reconnectToken`. Token se automatski dodaje REST zahtevima kao Bearer header, ali se ne prikazuje u UI-ju i Authorization header je redigovan u debug logovima.

@@ -286,60 +286,62 @@ export function LobbyPage() {
         </div>
       </header>
 
-      <section className="panel settings-panel">
-        <div className="panel-title-row">
-          <h2>Podesavanja</h2>
-          <span>{isHost ? 'Host kontrola' : 'Ceka se host'}</span>
-        </div>
+      <div className="lobby-layout">
+        <section className="panel players-panel">
+          <div className="panel-title-row">
+            <h2>Igraci</h2>
+            <span>Maks. 12</span>
+          </div>
 
-        <SegmentedControl
-          label="Broj impostora"
-          disabled={!isHost || lobby.status !== 'WAITING'}
-          value={lobby.settings.impostorCount}
-          options={[
-            { label: '1', value: 1 },
-            { label: '2', value: 2 },
-          ]}
-          onChange={(value) => handleSettingsChange('impostorCount', value)}
-        />
+          <ul className="player-list">
+            {lobby.players.map((player) => (
+              <li key={player.playerId} className="player-row">
+                <div className="player-avatar">{player.playerName.slice(0, 1).toUpperCase()}</div>
+                <div className="player-copy">
+                  <strong>{player.playerName}</strong>
+                  <span>
+                    {player.host ? 'Host' : 'Igrac'}
+                    {player.playerId === currentPlayer?.playerId ? ' - ti' : ''}
+                  </span>
+                </div>
+                {player.host ? <Crown className="host-icon" size={17} /> : null}
+                <span className={`status-dot ${player.connected ? 'connected' : 'disconnected'}`} />
+              </li>
+            ))}
+          </ul>
+        </section>
 
-        <SegmentedControl
-          label="Pomoc za impostora"
-          disabled={!isHost || lobby.status !== 'WAITING'}
-          value={lobby.settings.hintType}
-          options={[
-            { label: 'Kategorija', value: 'CATEGORY' },
-            { label: 'Asocijacija', value: 'ASSOCIATION' },
-          ]}
-          onChange={(value) => handleSettingsChange('hintType', value)}
-        />
+        <section className="panel settings-panel">
+          <div className="panel-title-row">
+            <h2>Podesavanja</h2>
+            <span>{isHost ? 'Host kontrola' : 'Ceka se host'}</span>
+          </div>
 
-        {!isHost ? <div className="disabled-note">Samo host moze da menja opcije pre pocetka.</div> : null}
-      </section>
+          <SegmentedControl
+            label="Broj impostora"
+            disabled={!isHost || lobby.status !== 'WAITING'}
+            value={lobby.settings.impostorCount}
+            options={[
+              { label: '1', value: 1 },
+              { label: '2', value: 2 },
+            ]}
+            onChange={(value) => handleSettingsChange('impostorCount', value)}
+          />
 
-      <section className="panel players-panel">
-        <div className="panel-title-row">
-          <h2>Igraci</h2>
-          <span>Maks. 12</span>
-        </div>
+          <SegmentedControl
+            label="Pomoc za impostora"
+            disabled={!isHost || lobby.status !== 'WAITING'}
+            value={lobby.settings.hintType}
+            options={[
+              { label: 'Kategorija', value: 'CATEGORY' },
+              { label: 'Asocijacija', value: 'ASSOCIATION' },
+            ]}
+            onChange={(value) => handleSettingsChange('hintType', value)}
+          />
 
-        <ul className="player-list">
-          {lobby.players.map((player) => (
-            <li key={player.playerId} className="player-row">
-              <div className="player-avatar">{player.playerName.slice(0, 1).toUpperCase()}</div>
-              <div className="player-copy">
-                <strong>{player.playerName}</strong>
-                <span>
-                  {player.host ? 'Host' : 'Igrac'}
-                  {player.playerId === currentPlayer?.playerId ? ' - ti' : ''}
-                </span>
-              </div>
-              {player.host ? <Crown className="host-icon" size={17} /> : null}
-              <span className={`status-dot ${player.connected ? 'connected' : 'disconnected'}`} />
-            </li>
-          ))}
-        </ul>
-      </section>
+          {!isHost ? <div className="disabled-note">Samo host moze da menja opcije pre pocetka.</div> : null}
+        </section>
+      </div>
 
       <div className={`sticky-actions ${isHost ? '' : 'muted'}`}>
         {isHost ? (

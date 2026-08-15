@@ -50,6 +50,20 @@ Flyway runs automatically on startup and creates the permanent word-content tabl
 For manual schema provisioning outside the normal Flyway startup flow, see
 `database/init_under_the_mask.sql`.
 
+## Production profile
+
+The Docker deployment runs with `SPRING_PROFILES_ACTIVE=prod`. The production profile requires environment-provided database and origin settings:
+
+```bash
+SPRING_DATASOURCE_URL='jdbc:mysql://db:3306/under_the_mask?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC'
+SPRING_DATASOURCE_USERNAME='underthemask'
+SPRING_DATASOURCE_PASSWORD='<secret>'
+APP_CORS_ALLOWED_ORIGINS='https://game.example.com'
+APP_WEBSOCKET_ALLOWED_ORIGINS='https://game.example.com'
+```
+
+Production is intended for a single backend instance because active lobbies and games are stored in memory.
+
 ## Test
 
 ```bash

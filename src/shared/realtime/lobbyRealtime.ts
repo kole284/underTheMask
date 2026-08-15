@@ -1,5 +1,6 @@
 import { Client, type StompSubscription } from '@stomp/stompjs';
 import type { GamePublicState, LobbyResponse, RealtimeEvent } from '../api/types';
+import { websocketUrl } from '../api/config';
 
 export type LobbyConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';
 
@@ -9,17 +10,11 @@ interface LobbyRealtimeHandlers {
   onStatusChange: (status: LobbyConnectionStatus) => void;
 }
 
-const wsUrl = import.meta.env.VITE_WS_URL;
-
-if (!wsUrl) {
-  throw new Error('VITE_WS_URL is required.');
-}
-
 export function createLobbyRealtimeClient(code: string, handlers: LobbyRealtimeHandlers) {
   let subscription: StompSubscription | null = null;
 
   const client = new Client({
-    brokerURL: wsUrl,
+    brokerURL: websocketUrl,
     reconnectDelay: 5000,
     debug: () => undefined,
     beforeConnect: () => {

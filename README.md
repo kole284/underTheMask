@@ -66,3 +66,97 @@ mvn test
 ## Native Android klijent
 
 Zasebna Kotlin/Jetpack Compose aplikacija nalazi se u `android/` direktorijumu. LAN podesavanje, build, instalacija i test plan za tri telefona opisani su u [Android README-u](android/README.md).
+
+## Production deployment na Hetzner server
+
+Production setup koristi Docker Compose:
+
+- `web` - Caddy server koji servira React build, automatski izdaje Let's Encrypt TLS sertifikat i proxy-je `/api` i `/ws`.
+- `backend` - single Spring Boot instanca na internoj Docker mrezi.
+- `db` - MySQL 8.4 sa named volume-om za podatke.
+
+Javno se izlazu samo portovi `80/tcp` i `443/tcp`. MySQL `3306` i Spring Boot `8080` ne treba otvarati prema internetu.
+
+### Prvi deployment
+
+1. DNS: napravi `A` zapis za domen/subdomen, npr. `game.example.com`, ka javnoj IP adresi Hetzner servera.
+2. Server: instaliraj Docker Engine i Docker Compose plugin.
+3. Firewall: dozvoli samo `22/tcp`, `80/tcp` i `443/tcp`. Ne otvaraj `3306` ni `8080`.
+4. Kloniraj repo na server i udji u projekat.
+5. Napravi production env:
+
+```bash
+cp .env.production.example .env
+```
+
+6. Popuni `.env`:
+
+```env
+GAME_DOMAIN=game.example.com
+LETSENCRYPT_EMAIL=admin@example.com
+DB_NAME=under_the_mask
+DB_USER=underthemask
+DB_PASSWORD=<jaka-lozinka>
+DB_ROOT_PASSWORD=<jaka-root-lozinka>
+SPRING_PROFILES_ACTIVE=prod
+```
+
+7. Pokreni stack:
+
+```bash
+./scripts/deploy.sh
+```
+
+Flyway migracije se izvrsavaju automatski pri startup-u backend containera. Backend container ne postaje healthy dok ne odgovori na root health endpoint, a pre toga ceka da MySQL prodje health check.
+
+8. Provera:
+
+```bash
+curl -I https://game.example.com/
+curl https://game.example.com/api/lobbies/ABCDEF
+```
+
+Druga komanda treba da vrati kontrolisanu JSON gresku za nepostojeci lobby, sto potvrdjuje da `/api` proxy radi. WebSocket koristi `wss://game.example.com/ws` kroz isti Caddy proxy.
+
+### Kasniji deployment
+
+```bash
+git pull
+docker compose up -d --build
+```
+
+Ili koristi:
+
+```bash
+./scripts/deploy.sh
+```
+
+### React production URL-ovi
+
+Production React build podrazumevano koristi isti origin:
+
+- REST: `/api`
+- WebSocket: `wss://GAME_DOMAIN/ws` kada je stranica otvorena preko HTTPS-a
+
+`VITE_API_URL` i `VITE_WS_URL` ostaju podrzani za lokalni razvoj ili LAN testiranje, ali nisu potrebni za production compose deployment.
+
+### Android production URL-ovi
+
+Debug build koristi `backend.host` iz `android/local.properties`, npr:
+
+```properties
+backend.host=192.168.1.50
+```
+
+Release build koristi:
+
+```properties
+backend.release.apiUrl=https://game.example.com/api/
+backend.release.wsUrl=wss://game.example.com/ws
+```
+
+Release APK ne treba lokalnu IP adresu. Cleartext HTTP/WS i `ACCESS_LOCAL_NETWORK` dozvola ostaju samo za debug build.
+
+### Ogranicenje lobby persistence-a
+
+Aktivni lobbyji, igraci, reconnect tokeni i partije su trenutno u memoriji jednog Spring Boot procesa. Production compose zato pokrece samo jednu backend repliku. Restart ili redeploy backenda prekida aktivne partije i brise aktivne lobbyje. Trajni katalog reci ostaje u MySQL bazi.

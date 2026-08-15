@@ -2,6 +2,7 @@
 sdk.dir=/home/your-user/Android/Sdk
 backend.host=192.168.1.50
 
-# Optional release endpoints. Release builds require HTTPS/WSS in production.
-backend.release.apiUrl=https://api.example.com/api/
-backend.release.wsUrl=wss://api.example.com/ws
+# Release endpoints for the Hetzner production deployment.
+# Do not use a local IP address here. Release builds require HTTPS/WSS.
+backend.release.apiUrl=https://game.example.com/api/
+backend.release.wsUrl=wss://game.example.com/ws

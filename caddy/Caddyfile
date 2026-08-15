@@ -1,0 +1,25 @@
+{
+	email {$LETSENCRYPT_EMAIL}
+}
+
+{$GAME_DOMAIN} {
+	encode zstd gzip
+
+	handle /api* {
+		reverse_proxy backend:8080 {
+			header_up Host {host}
+		}
+	}
+
+	handle /ws* {
+		reverse_proxy backend:8080 {
+			header_up Host {host}
+		}
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

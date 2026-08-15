@@ -27,8 +27,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 20% 0%, rgba(240, 184, 77, 0.16), transparent 28rem),
-    linear-gradient(160deg, #111111 0%, #181713 48%, #101010 100%);
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+    linear-gradient(145deg, #111111 0%, #181713 52%, #101010 100%);
+  background-size: 28px 28px, 28px 28px, auto;
 }
 
 button,
@@ -45,31 +47,47 @@ a {
   text-decoration: none;
 }
 
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 14ch;
+  margin-bottom: 0;
+  font-size: 3.1rem;
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 1rem;
+}
+
 .app-shell {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background:
+    linear-gradient(rgba(240, 184, 77, 0.08), transparent 36%),
+    rgba(17, 17, 17, 0.26);
 }
 
 .phone-frame {
-  width: min(100%, 460px);
+  width: 100%;
   min-height: 100vh;
-  background: rgba(17, 17, 17, 0.72);
 }
 
 .screen {
+  width: min(100%, 1180px);
   min-height: 100vh;
+  margin: 0 auto;
   padding: 24px 18px;
 }
 
 .home-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  align-content: space-between;
   gap: 40px;
 }
 
@@ -110,29 +128,13 @@ a {
   text-transform: uppercase;
 }
 
-h1,
-h2,
-p {
-  margin-top: 0;
-}
-
-h1 {
-  max-width: 13ch;
-  margin-bottom: 0;
-  font-size: clamp(2.6rem, 17vw, 4.5rem);
-  line-height: 0.92;
-  letter-spacing: 0;
-}
-
-h2 {
-  margin-bottom: 0;
-  font-size: 1rem;
-}
-
 .home-actions,
 .form-panel,
 .created-panel,
-.sticky-actions {
+.sticky-actions,
+.game-side-column,
+.game-main-column,
+.result-layout {
   display: grid;
   gap: 12px;
 }
@@ -207,12 +209,13 @@ h2 {
 }
 
 .screen-heading {
+  max-width: 620px;
   margin-bottom: 24px;
 }
 
 .screen-heading h1 {
-  max-width: 9ch;
-  font-size: clamp(2.35rem, 14vw, 3.65rem);
+  max-width: 10ch;
+  font-size: 2.75rem;
 }
 
 .panel {
@@ -330,7 +333,8 @@ h2 {
   padding: 0;
 }
 
-.lobby-screen {
+.lobby-screen,
+.game-screen {
   padding-bottom: 112px;
 }
 
@@ -350,7 +354,9 @@ h2 {
 .lobby-topbar,
 .lobby-header,
 .panel-title-row,
-.player-row {
+.player-row,
+.game-header,
+.role-panel-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -391,7 +397,7 @@ h2 {
 
 .lobby-header h1 {
   max-width: none;
-  font-size: clamp(2.4rem, 15vw, 3.4rem);
+  font-size: 3rem;
   line-height: 1;
 }
 
@@ -414,12 +420,13 @@ h2 {
   font-weight: 900;
 }
 
-.settings-panel,
-.players-panel {
-  margin-top: 12px;
+.lobby-layout {
+  display: grid;
+  gap: 12px;
 }
 
-.settings-panel {
+.settings-panel,
+.players-panel {
   display: grid;
   gap: 14px;
   overflow: hidden;
@@ -443,7 +450,7 @@ h2 {
 .player-list {
   display: grid;
   gap: 8px;
-  margin: 14px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -512,10 +519,11 @@ h2 {
 
 .sticky-actions {
   position: fixed;
-  right: max(18px, calc((100vw - 460px) / 2 + 18px));
+  right: 18px;
   bottom: 18px;
-  left: max(18px, calc((100vw - 460px) / 2 + 18px));
-  width: min(calc(100vw - 36px), 424px);
+  left: 18px;
+  max-width: 560px;
+  margin: 0 auto;
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -548,21 +556,9 @@ h2 {
   border: 0;
 }
 
-.game-screen {
-  padding-bottom: 116px;
-}
-
 .compact-code {
   display: block;
   font-size: 1.2rem;
-}
-
-.game-header,
-.role-panel-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .game-header {
@@ -617,18 +613,24 @@ h2 {
 .role-content strong {
   margin: 4px 0;
   font-size: 2rem;
+  overflow-wrap: anywhere;
 }
 
-.game-status-panel,
-.clue-chat-panel,
-.vote-panel,
-.reveal-panel,
-.tally-panel {
-  margin-top: 12px;
+.game-phase-layout {
+  display: grid;
+  gap: 12px;
 }
 
 .game-status-panel h2 {
   font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.clue-chat-panel,
+.vote-panel,
+.reveal-panel,
+.tally-panel {
+  margin-top: 0;
 }
 
 .tally-panel ul {
@@ -651,7 +653,7 @@ h2 {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
 }
 
 .clue-chat-heading > span {
@@ -682,8 +684,8 @@ h2 {
 }
 
 .clue-chat-log {
-  min-height: 168px;
-  max-height: 320px;
+  min-height: 220px;
+  max-height: 420px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -738,7 +740,7 @@ h2 {
   place-items: center;
   border-radius: 50%;
   background: #252525;
-  color: var(--text);
+  color: var(--ink);
   font-size: 0.7rem;
   font-weight: 900;
 }
@@ -748,7 +750,7 @@ h2 {
   padding: 10px 12px;
   border-radius: 3px 8px 8px 8px;
   background: #111111;
-  color: var(--text);
+  color: var(--ink);
   font-weight: 750;
   overflow-wrap: anywhere;
 }
@@ -785,16 +787,6 @@ h2 {
   width: auto;
 }
 
-.tally-panel li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #111111;
-}
-
 .vote-panel form {
   display: grid;
   gap: 14px;
@@ -821,7 +813,15 @@ h2 {
 .vote-option input {
   width: 20px;
   height: 20px;
+  flex: 0 0 auto;
   accent-color: var(--gold);
+}
+
+.vote-option span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vote-complete {
@@ -854,6 +854,7 @@ h2 {
 
 .result-banner h2 {
   font-size: 2.6rem;
+  overflow-wrap: anywhere;
 }
 
 .result-banner p {
@@ -862,20 +863,44 @@ h2 {
   font-size: 0.82rem;
 }
 
+.result-grid {
+  display: grid;
+  gap: 12px;
+}
+
 .reveal-panel {
   display: grid;
+  align-content: center;
   gap: 6px;
   text-align: center;
 }
 
 .reveal-panel > strong {
   font-size: 2rem;
+  overflow-wrap: anywhere;
 }
 
 .reveal-panel > span:last-child {
   color: var(--muted);
   font-size: 0.86rem;
   font-weight: 800;
+}
+
+.tally-panel li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #111111;
+}
+
+.tally-panel li span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tally-panel li strong {
@@ -890,16 +915,192 @@ h2 {
   }
 }
 
+@media (max-width: 380px) {
+  h1 {
+    font-size: 2.55rem;
+  }
+
+  .screen-heading h1,
+  .game-header h1,
+  .lobby-header h1 {
+    font-size: 2.25rem;
+  }
+
+  .button {
+    padding: 0 12px;
+  }
+}
+
 @media (min-width: 720px) {
-  .phone-frame {
-    min-height: calc(100vh - 32px);
-    margin: 16px 0;
-    border: 1px solid rgba(247, 242, 232, 0.12);
-    border-radius: 28px;
-    overflow: hidden;
+  h1 {
+    font-size: 4rem;
   }
 
   .screen {
-    min-height: calc(100vh - 32px);
+    padding: 32px;
+  }
+
+  .home-screen {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: end;
+    align-content: center;
+    min-height: 100vh;
+  }
+
+  .brand-block {
+    padding-top: 0;
+  }
+
+  .home-actions {
+    align-self: end;
+  }
+
+  .form-screen {
+    max-width: 760px;
+  }
+
+  .screen-heading h1 {
+    font-size: 3.25rem;
+  }
+
+  .lobby-header h1 {
+    font-size: 3.4rem;
+  }
+
+  .player-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vote-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-grid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .screen {
+    padding: 40px;
+  }
+
+  .home-screen {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+
+  .home-screen h1 {
+    max-width: 13ch;
+    font-size: 4.7rem;
+  }
+
+  .form-screen {
+    max-width: 1020px;
+  }
+
+  .form-screen .form-panel,
+  .form-screen .created-panel {
+    max-width: 520px;
+  }
+
+  .form-screen .created-panel {
+    margin-top: 16px;
+  }
+
+  .lobby-screen,
+  .game-screen {
+    padding-bottom: 40px;
+  }
+
+  .lobby-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+    align-items: start;
+  }
+
+  .players-panel {
+    min-height: 360px;
+  }
+
+  .player-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sticky-actions {
+    position: static;
+    max-width: none;
+    margin: 0;
+    background: rgba(27, 26, 23, 0.94);
+    backdrop-filter: none;
+  }
+
+  .game-phase-layout {
+    grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .clue-phase-layout .clue-chat-log {
+    min-height: 430px;
+    max-height: calc(100vh - 260px);
+  }
+
+  .voting-phase-layout {
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  }
+
+  .game-main-column {
+    grid-template-columns: minmax(0, 0.85fr) minmax(340px, 1fr);
+    align-items: start;
+  }
+
+  .game-main-column .clue-chat-log {
+    min-height: 360px;
+    max-height: 520px;
+  }
+
+  .vote-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-layout {
+    gap: 18px;
+  }
+
+  .result-banner {
+    padding: 34px 0;
+  }
+
+  .result-banner h2 {
+    font-size: 3.25rem;
+  }
+
+  .result-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .screen {
+    width: min(100%, 1240px);
+    padding: 48px 40px;
+  }
+
+  .home-screen h1 {
+    font-size: 5.1rem;
+  }
+
+  .lobby-layout {
+    grid-template-columns: minmax(0, 1fr) 400px;
+  }
+
+  .player-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .game-phase-layout {
+    grid-template-columns: 400px minmax(0, 1fr);
+  }
+
+  .vote-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
